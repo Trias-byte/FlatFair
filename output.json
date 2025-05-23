@@ -1,0 +1,59 @@
+{
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": "Продается студия, 22,59 м²",
+    "image": [
+        "https://images.cdn-cian.ru/images/2485860308-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860368-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860415-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860454-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860485-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860527-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860564-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860588-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860618-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860723-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860746-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860771-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860815-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860854-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860888-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860921-1.jpg",
+        "https://images.cdn-cian.ru/images/2485860954-1.jpg",
+        "https://images.cdn-cian.ru/images/2485861002-1.jpg",
+        "https://images.cdn-cian.ru/images/2485861039-1.jpg",
+        "https://images.cdn-cian.ru/images/2485861079-1.jpg",
+        "https://images.cdn-cian.ru/images/2485861116-1.jpg",
+        "https://images.cdn-cian.ru/images/2485861156-1.jpg",
+        "https://images.cdn-cian.ru/images/2485861206-1.jpg",
+        "https://images.cdn-cian.ru/images/2485861244-1.jpg",
+        "https://images.cdn-cian.ru/images/2485861270-1.jpg",
+        "https://images.cdn-cian.ru/images/2485861294-1.jpg",
+        "https://images.cdn-cian.ru/images/2485861304-1.jpg"
+    ],
+    "description": "Скидка 1 жителям района. Жилой комплекс комфорткласса Старлайт в Красногвардейском районе СанктПетербурга. В 300 метрах от берега реки Охта у Новоохтинского парка. Новая большая школа прямо рядом с домом Это зеленый активно развивающийся и благоустраиваемый квартал Петербурга, где природный ландшафт идеально сочетается с хорошей транспортной доступностью и развитой, сложившейся инфраструктурой. Проект состоит из двух устремленных ввысь 25этажных современных башен и 7ми этажного корпуса переменной этажности с индивидуальными террасами. Жилые корпуса объединены галереейстилобатом, в которой будут располагаться магазины, пекарни, аптеки и салоны красоты. Двор закрыт от посторонних и приподнят, что обеспечит дополнительную приватность проживания. Во дворе будет выполнено авторское благоустройство, в том числе уникальная проекция звездного неба",
+    "sku": 317404201,
+    "brand": {
+        "@type": "Brand",
+        "name": "Циан"
+    },
+    "review": {
+        "@type": "Review",
+        "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": 4.6,
+            "bestRating": 5
+        },
+        "author": {
+            "@type": "Person",
+            "name": "Лидер Групп"
+        }
+    },
+    "offers": {
+        "@type": "Offer",
+        "url": "https://spb.cian.ru/sale/flat/317404201/",
+        "priceCurrency": "RUB",
+        "availability": "https://schema.org/InStock",
+        "price": 4269510
+    }
+}

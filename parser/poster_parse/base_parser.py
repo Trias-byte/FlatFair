@@ -30,39 +30,41 @@ class ParserFactory:
         parser_class = getattr(module, class_name)
         return parser_class()
 
-    @staticmethod
+    @abstractmethod
     def _extract_domain(url: str) -> str:
         """Извлекает домен второго уровня"""
         parsed = urlparse(url)
         domain_parts = parsed.netloc.split('.')
         return '.'.join(domain_parts[-2:]) if len(domain_parts) >= 2 else parsed.netloc
     
-    @staticmethod
+    @abstractmethod
     def get_city() -> str:
         pass
     
-    @staticmethod
+    @abstractmethod
     def get_type_deal() -> str:
         pass
-
+    
+    @abstractmethod
     def get_type_property() -> str:
         pass
 
-    @staticmethod
+    @abstractmethod
     def get_price() -> int:
         pass
     
-    @staticmethod
+    @abstractmethod
     def get_area_total() -> float:
         pass
 
-    @staticmethod
+    @abstractmethod
     def get_num_rooms() -> int:
         pass
 
-    @staticmethod
+    @abstractmethod
     def get_total_floors() -> int:
         pass
-
+    
+    @abstractmethod
     def get_flat_desc_for_nlp() -> str:
         pass
