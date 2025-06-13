@@ -1,0 +1,4 @@
+nest-asyncio==1.6.0
+typing==
+motor==3.7.1
+aio-pika==9.5.5
