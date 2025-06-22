@@ -1,7 +1,7 @@
 import re
 import asyncio
 import json
-import uuid # Для генерации request_id
+import uuid
 from typing import Dict, Any, Optional
 from urllib.parse import urlparse
 

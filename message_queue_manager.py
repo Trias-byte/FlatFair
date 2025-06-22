@@ -5,6 +5,9 @@ import aio_pika
 from aio_pika import connect_robust, Message, ExchangeType, Channel, Connection, Queue
 from aio_pika.abc import AbstractRobustConnection, AbstractChannel, AbstractQueue, AbstractExchange, IncomingMessage
 
+import logging
+
+
 class MessageQueueManager:
     """
     Класс для управления подключением и взаимодействием с RabbitMQ.
@@ -42,7 +45,7 @@ class MessageQueueManager:
         if name not in self._queues:
             queue = await self._channel.declare_queue(name, durable=durable)
             self._queues[name] = queue
-            print(f"Объявлена очередь: {name}")
+            print(f"Объявлена очередь: {name}") # TODO log
         return self._queues[name]
 
     async def bind_queue_to_exchange(self, queue_name: str, exchange_name: str, routing_key: str):

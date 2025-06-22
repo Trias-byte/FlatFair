@@ -4,9 +4,11 @@ import logging
 import json
 import asyncio
 
-# Абсолютный импорт: message_queue_manager находится в корне
-from message_queue_manager import MessageQueueManager 
 from posterData import PosterData 
+from message_queue_manager import MessageQueueManager 
+
+
+hui = PosterData
 
 logger = logging.getLogger(__name__)
 
@@ -20,20 +22,16 @@ async def initialize_mq_for_bot():
     """
     global mq_manager_instance
     if mq_manager_instance is None:
-        # AMQP_URL будет взят из переменных окружения (через os.getenv в MessageQueueManager)
         mq_manager_instance = MessageQueueManager()
         try:
             await mq_manager_instance.connect()
-            # Объявляем exchanges, которые нужны для отправки из бота
             await mq_manager_instance.declare_exchange("parsing_exchange", type='topic')
             logger.info("Handlers: RabbitMQ connection and exchanges initialized for bot.")
         except Exception as e:
             logger.error(f"Handlers: Failed to initialize RabbitMQ connection: {e}")
-            raise # Перебросить ошибку, если не удалось подключиться
+            raise 
 
 def format_prediction(data: dict) -> str:
-    # Эта функция теперь будет использоваться TelegramNotificationConsumer
-    # Поэтому ее можно оставить здесь или перенести в TelegramBot.py
     predicted_price = data.get('predicted_price', 'N/A')
     address = data.get('address', 'N/A')
     url = data.get('url', 'N/A')

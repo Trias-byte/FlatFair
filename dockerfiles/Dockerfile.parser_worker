@@ -1,7 +1,7 @@
 # Dockerfile.parser_worker
 FROM python:3.9-slim-buster
 WORKDIR /app
-COPY requirements_full_dev.txt .
-RUN pip install --no-cache-dir -r requirements_full_dev.txt
+COPY parser/requirements_parse.txt .
+RUN pip install --no-cache-dir -r requirements_parse.txt
 COPY . .
 CMD ["python", "/app/parser/parser_worker.py"]

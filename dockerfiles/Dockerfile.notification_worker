@@ -1,7 +1,7 @@
 # Dockerfile.notification_worker
 FROM python:3.9-slim-buster
 WORKDIR /app
-COPY requirements_full_dev.txt .
-RUN pip install --no-cache-dir -r requirements_full_dev.txt
+COPY tg_bot/requirements_tg.txt .
+RUN pip install --no-cache-dir -r requirements_tg.txt
 COPY . .
 CMD ["python", "/app/tg_bot/notification_worker.py"]
