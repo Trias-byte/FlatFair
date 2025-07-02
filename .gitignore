@@ -180,4 +180,3 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 # env file
-_config.py

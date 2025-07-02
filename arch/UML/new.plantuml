@@ -1,0 +1,84 @@
+@startuml new
+skinparam handwritten true
+skinparam sequence {
+    LifeLineBorderColor #blue
+    LifeLineBackgroundColor #skyblue
+    ActorBorderColor #black
+    ParticipantBorderColor #green
+    ArrowColor #darkorange
+}
+
+actor Пользователь as User
+participant "API Gateway / Бот" as API
+participant "Request Service" as ReqSvc
+collections "RabbitMQ\n(Parse_Queue)" as RQ_Parse
+participant "Parsing Service\n(Worker)" as ParseSvc
+collections "RabbitMQ\n(Data_Queue)" as RQ_Data
+participant "Database Service" as DBSvc
+database "Database" as DB
+collections "RabbitMQ\n(Analysis_Queue)" as RQ_Analysis
+participant "Analysis Service\n(Model)" as AnalyzeSvc
+collections "RabbitMQ\n(Notification_Queue)" as RQ_Notify
+participant "Notification Service" as NotifSvc
+
+== 1. Запрос пользователя ==
+User -> API : Отправляет URL для анализа
+activate API
+
+API -> ReqSvc : Запрос: `process_url(url)`
+activate ReqSvc
+
+ReqSvc -> RQ_Parse : Публикует сообщение: `{url: "...", request_id: "..."}`
+deactivate ReqSvc
+
+API --> User : Ответ: `{"status": "Запрос принят", "request_id": "..."}`
+deactivate API
+
+== 2. Парсинг данных ==
+RQ_Parse --> ParseSvc : Потребляет сообщение: `{url: "...", request_id: "..."}`
+activate ParseSvc
+
+ParseSvc -> ParseSvc : Определение парсера (Cian, Avito и т.д.)
+ParseSvc -> ParseSvc : Загрузка HTML (async http request)
+ParseSvc -> ParseSvc : Парсинг HTML -> `PosterData`
+
+ParseSvc -> RQ_Data : Публикует сообщение: `PosterData.to_dict()`
+deactivate ParseSvc
+
+== 3. Сохранение данных ==
+RQ_Data --> DBSvc : Потребляет сообщение: `PosterData.to_dict()`
+activate DBSvc
+
+DBSvc -> DB : Сохранить/обновить `PosterData` (UPSERT)
+activate DB
+deactivate DB
+
+DBSvc -> RQ_Analysis : Публикует сообщение: `PosterData.to_dict()` (или только `id`)
+deactivate DBSvc
+
+== 4. Анализ данных ==
+RQ_Analysis --> AnalyzeSvc : Потребляет сообщение: `PosterData.to_dict()`
+activate AnalyzeSvc
+
+AnalyzeSvc -> DB : (Опционально) Получить полные данные `PosterData` по `id`
+activate DB
+deactivate DB
+
+AnalyzeSvc -> AnalyzeSvc : Выполняет ML-анализ / бизнес-логику -> `AnalysisResult`
+AnalyzeSvc -> DB : Сохранить `AnalysisResult` (обновить `PosterData` или в отдельную коллекцию)
+activate DB
+deactivate DB
+
+AnalyzeSvc -> RQ_Notify : Публикует сообщение: `{request_id: "...", analysis_result: {...}}`
+deactivate AnalyzeSvc
+
+== 5. Уведомление пользователя ==
+RQ_Notify --> NotifSvc : Потребляет сообщение: `{request_id: "...", analysis_result: {...}}`
+activate NotifSvc
+
+NotifSvc -> NotifSvc : Формирование сообщения для пользователя
+
+NotifSvc -> User : Отправляет вердикт: `{"URL:...", "Оценка:...", "Рекомендации:..."}`
+deactivate NotifSvc
+
+@enduml

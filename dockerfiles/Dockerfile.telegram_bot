@@ -1,0 +1,7 @@
+# Dockerfile.telegram_bot
+FROM python:3.9-slim-buster
+WORKDIR /app
+COPY tg_bot/requirements_tg.txt .
+RUN pip install --no-cache-dir -r requirements_tg.txt
+COPY . .
+CMD ["python", "/app/tg_bot/TelegramBot.py"]

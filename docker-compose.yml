@@ -1,0 +1,171 @@
+version: '3.8'
+
+services:
+  # Сервис для RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - real_estate_network
+
+  # Сервис для MongoDB
+  mongodb:
+    image: mongo:latest
+    hostname: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - real_estate_network
+
+  # Сервис Telegram Bot
+  telegram_bot:
+    build:
+      context: . 
+      dockerfile: ./dockerfiles/Dockerfile.telegram_bot 
+    depends_on:
+      - rabbitmq
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      AMQP_URL: ${AMQP_URL}
+    networks:
+      - real_estate_network
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Сервис Parser Worker
+  parser_worker:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile.parser_worker
+    depends_on:
+      - rabbitmq
+    environment:
+      AMQP_URL: ${AMQP_URL}
+    networks:
+      - real_estate_network
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Сервис Geo Enrichment Worker
+  geo_enrichment_worker:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile.geo_enrichment_worker
+    depends_on:
+      - rabbitmq
+    environment:
+      AMQP_URL: ${AMQP_URL}
+    networks:
+      - real_estate_network
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Сервис Economic Enrichment Worker
+  economic_enrichment_worker:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile.economic_enrichment_worker
+    depends_on:
+      - rabbitmq
+    environment:
+      AMQP_URL: ${AMQP_URL}
+    networks:
+      - real_estate_network
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Сервис DB Worker
+  db_worker:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile.db_worker
+    depends_on:
+      - rabbitmq
+      - mongodb
+    environment:
+      AMQP_URL: ${AMQP_URL}
+      MONGO_URI: ${MONGO_URI}
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      MONGO_COLLECTION_NAME: ${MONGO_COLLECTION_NAME}
+    networks:
+      - real_estate_network
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Сервис Analysis Worker
+  analysis_worker:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile.analysis_worker
+    depends_on:
+      - rabbitmq
+      - mongodb
+    environment:
+      AMQP_URL: ${AMQP_URL}
+      MONGO_URI: ${MONGO_URI}
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      MONGO_COLLECTION_NAME: ${MONGO_COLLECTION_NAME}
+    networks:
+      - real_estate_network
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Сервис Notification Worker
+  notification_worker:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile.notification_worker
+    depends_on:
+      - rabbitmq
+    environment:
+      AMQP_URL: ${AMQP_URL}
+    networks:
+      - real_estate_network
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+volumes:
+  rabbitmq_data:
+  mongo_data:
+
+networks:
+  real_estate_network:
+    driver: bridge

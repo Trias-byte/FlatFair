@@ -1,0 +1,7 @@
+# Dockerfile.db_worker
+FROM python:3.9-slim-buster
+WORKDIR /app
+COPY bd/db_requirements.txt .
+RUN pip install --no-cache-dir -r db_requirements.txt
+COPY . .
+CMD ["python", "/app/bd/db_worker.py"]
