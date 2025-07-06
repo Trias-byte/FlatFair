@@ -2,8 +2,8 @@ import asyncio
 import json
 from typing import Dict, Any, Optional, Callable
 import aio_pika
-from aio_pika import connect_robust, Message, ExchangeType, Channel, Connection, Queue
-from aio_pika.abc import AbstractRobustConnection, AbstractChannel, AbstractQueue, AbstractExchange, IncomingMessage
+from aio_pika import connect_robust, Message, ExchangeType, Channel, Connection, Queue, IncomingMessage
+from aio_pika.abc import AbstractRobustConnection, AbstractChannel, AbstractQueue, AbstractExchange
 
 import logging
 
@@ -14,7 +14,7 @@ class MessageQueueManager:
     Предоставляет методы для подключения, объявления exchanges/очередей,
     публикации и потребления сообщений.
     """
-    def __init__(self, amqp_url: str):
+    def __init__(self, amqp_url: str, max_retries, retry_delay):
         self.amqp_url = amqp_url
         self._connection: Optional[AbstractRobustConnection] = None
         self._channel: Optional[AbstractChannel] = None
