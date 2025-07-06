@@ -54,14 +54,17 @@ class EconomicData:
 class PosterData:
     """
     Основной dataclass для хранения всей информации об объекте недвижимости.
+    ИСПРАВЛЕНО: Все обязательные поля идут ПЕРЕД опциональными
     """
-    _id: Optional[str] = field(default=None, repr=False) # MongoDB-специфичное поле
-
-    id: str                                     # Уникальный идентификатор объявления (например, из URL)
-    url: str                                    # URL объявления
+    # Обязательные поля (БЕЗ значений по умолчанию)
+    id: str                                     # Уникальный идентификатор объявления
+    url: str                                    # URL объявления  
     section: str                                # purchase/rent
     property_type: str                          # house/flat
-
+    
+    # Опциональные поля (СО значениями по умолчанию)
+    _id: Optional[str] = field(default=None, repr=False) # MongoDB-специфичное поле
+    
     price: Optional[int] = None                 # Цена в рублях
     address: Optional[str] = None               # Полный адрес объекта
     area_total: Optional[float] = None          # Общая площадь в кв метрах
@@ -88,7 +91,6 @@ class PosterData:
 
     def __post_init__(self):
         # Приведение типов и очистка данных после инициализации
-        # (Оставлю только основные примеры, т.к. полная логика уже была)
         if self.price is not None:
             try:
                 self.price = int(re.sub(r'\D', '', str(self.price)))
@@ -134,11 +136,22 @@ class PosterData:
                 print(f"Ошибка при создании EconomicData из словаря: {e} -> {self.economic_data}")
                 self.economic_data = None
 
-
     def to_dict(self) -> Dict[str, Any]:
         data_dict = asdict(self)
 
         if data_dict.get('_id') is None:
-            del data_dict['_id']
+            data_dict.pop('_id', None)
             
         return data_dict
+
+
+# Добавляем enum для совместимости (если используется в улучшенной версии)
+from enum import Enum
+
+class ProcessingStatus(Enum):
+    PENDING = "pending"
+    PARSING = "parsing"
+    ENRICHING = "enriching"
+    ANALYZING = "analyzing"
+    COMPLETED = "completed"
+    FAILED = "failed"

@@ -1,4 +1,4 @@
-from base_parser import BaseParser
+from parser.poster_parse.base_parser import BaseParser
 from bs4 import BeautifulSoup
 from typing import Dict, Any, List, Optional
 from posterData import *

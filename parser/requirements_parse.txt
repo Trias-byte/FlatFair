@@ -1,1 +1,2 @@
 aio-pika==9.5.5
+aiohttp==3.11.18

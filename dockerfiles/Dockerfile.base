@@ -1,0 +1,163 @@
+# Dockerfile.base - базовый образ для всех сервисов
+FROM python:3.11-slim
+
+# Устанавливаем системные зависимости
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Создаем пользователя приложения
+RUN addgroup --gid 1001 --system appgroup && \
+    adduser --uid 1001 --system --gid 1001 appuser
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Копируем requirements.txt и устанавливаем зависимости
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Копируем исходный код
+COPY . .
+
+# Создаем директорию для логов
+RUN mkdir -p /app/logs && chown -R appuser:appgroup /app/logs
+
+# Переключаемся на пользователя приложения
+USER appuser
+
+# Dockerfile.telegram_bot
+FROM python:3.11-slim as telegram_bot
+
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN mkdir -p /app/logs
+
+EXPOSE 8080
+
+CMD ["python", "app/tg_bot/telegram_bot.py"]
+
+# Dockerfile.parser_worker
+FROM python:3.11-slim as parser_worker
+
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN mkdir -p /app/logs
+
+CMD ["python", "app/parser/parser_worker.py"]
+
+# Dockerfile.geo_enrichment_worker
+FROM python:3.11-slim as geo_enrichment_worker
+
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN mkdir -p /app/logs
+
+CMD ["python", "app/parser/geo_parse/geo_enrichment_worker.py"]
+
+# Dockerfile.economic_enrichment_worker
+FROM python:3.11-slim as economic_enrichment_worker
+
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN mkdir -p /app/logs
+
+CMD ["python", "app/parser/economic_parser/economic_enrichment_worker.py"]
+
+# Dockerfile.db_worker
+FROM python:3.11-slim as db_worker
+
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN mkdir -p /app/logs
+
+CMD ["python", "app/bd/db_worker.py"]
+
+# Dockerfile.analysis_worker
+FROM python:3.11-slim as analysis_worker
+
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN mkdir -p /app/logs
+
+CMD ["python", "app/ML/analysis_worker.py"]
+
+# Dockerfile.notification_worker
+FROM python:3.11-slim as notification_worker
+
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN mkdir -p /app/logs
+
+CMD ["python", "app/tg_bot/notification_worker.py"]
